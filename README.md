@@ -1,39 +1,42 @@
-# Hide & Seek — Web (Vercel) build
+# Hide & Seek — Web (Vercel)
 
-Static Godot 4 **Web** export of the game, hosted on Vercel. This is a separate
-git repo from the desktop project (the desktop project ignores this folder).
+Two things live here:
+- **`webgame/`** — a standalone, lightweight **single-player** Godot project
+  (Compatibility renderer, primitives only, no assets, no networking). This is
+  what you export to the browser. It is **separate from the desktop project** —
+  the desktop `.exe` game is untouched.
+- **`index.html` + `vercel.json`** — what Vercel serves. Right now `index.html`
+  is a placeholder; the Godot Web export replaces it.
 
-## Important web caveats (read first)
-1. **Renderer:** the browser build MUST use the **Compatibility** renderer
-   (WebGL2). Forward+ (the desktop renderer) does not run in browsers, so
-   **SDFGI / SSR / SSIL / volumetric fog do nothing on web** — the web version
-   will look flatter than desktop. In Godot: Project Settings → Rendering →
-   Renderer → set Rendering Method to **Compatibility** (or add a web override)
-   before exporting.
-2. **Multiplayer:** the desktop game uses **ENet (UDP)**, which browsers cannot
-   use. Web multiplayer needs **WebSocket** or **WebRTC** instead — see
-   `MULTIPLAYER.md`. Vercel itself cannot host the realtime server (its
-   functions are short-lived); PartyKit / a small Godot server does.
-3. **Download size:** the 2048² textures + `.glb` characters make a big `.pck`.
-   For web, shrink textures (e.g. 512²) and consider fewer assets, or loading
-   will be slow.
+The desktop game (multiplayer, GLB characters, ultra graphics) does **not** run
+on web as-is: browsers can't do Forward+ (WebGL2 only), can't do ENet/UDP, and
+the 150 MB of textures/GLBs are too heavy. So this web build is the lean core:
+**walk around and hide in shadows, survive a countdown.**
 
-## Export from Godot into this folder
-1. Set the renderer to **Compatibility** (see above).
-2. Project → Export → **Web** preset → **Export Project…**
-3. Export path: this folder, filename **`index.html`**.
-   (Produces `index.html`, `index.wasm`, `index.pck`, `index.js`, etc.)
+## Export the web build (in Godot)
+1. Open **`vercelversion/webgame/`** as a project in Godot (it's already set to
+   the **Compatibility** renderer).
+2. Project → **Export** → Add a **Web** preset (install the Web export templates
+   if prompted).
+3. **Export Project…** with the export path set to the **parent folder** as
+   **`../index.html`** — i.e. it writes `index.html`, `index.wasm`, `index.pck`,
+   `index.js` into `vercelversion/` (overwriting the placeholder).
+4. Test locally: `python -m http.server` in `vercelversion/`, open the page.
+   (Godot web needs to be served over http, not opened as a file.)
 
-## Deploy to Vercel
-Option A — CLI (simplest):
+## Deploy
+Because the repo is connected to Vercel, just commit & push:
 ```
-npm i -g vercel
-cd vercelversion
-vercel            # first run links/creates the project
-vercel --prod     # promote to production
+git add -A && git commit -m "web build" && git push
 ```
-Option B — Git: push this folder's repo to GitHub, then "Import Project" in the
-Vercel dashboard (Framework preset: **Other**, output dir: this folder root).
+Vercel redeploys automatically. `vercel.json` sets the COOP/COEP headers Godot
+web needs.
 
-`vercel.json` here sets the COOP/COEP headers Godot web needs for
-SharedArrayBuffer (required if you enable threads in the export preset).
+⚠️ GitHub rejects files > 100 MB. This lean build should be well under that
+(no big assets). If a future build's `.pck` is too big, deploy with the Vercel
+CLI (`vercel --prod`) instead of git, or shrink assets.
+
+## Online multiplayer later
+See `MULTIPLAYER.md`. Short version: web needs WebSocket or WebRTC (not ENet),
+and a server that isn't Vercel (PartyKit, or a small headless Godot server on
+Fly/Render). That's a separate build on top of this.
