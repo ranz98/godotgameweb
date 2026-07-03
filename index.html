@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hide &amp; Seek — Web build</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      font-family: system-ui, sans-serif; text-align: center;
+      background: radial-gradient(120% 120% at 50% 0%, #1b2838 0%, #0b0f14 70%);
+      color: #e6edf3;
+    }
+    .card { max-width: 640px; padding: 2rem; }
+    h1 { font-size: 2.2rem; margin: 0 0 .5rem; }
+    .tag { color: #7aa2ff; font-weight: 600; letter-spacing: .04em; }
+    p { color: #9fb0c3; line-height: 1.6; }
+    code { background: #172230; padding: .15rem .4rem; border-radius: 6px; color: #cfe1ff; }
+    ol { text-align: left; display: inline-block; color: #9fb0c3; line-height: 1.8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="tag">HIDE &amp; SEEK</div>
+    <h1>Web build coming soon 🕹️</h1>
+    <p>This Vercel site is live and ready. The game itself will appear here once
+      the Godot <strong>Web</strong> export is dropped into this folder.</p>
+    <ol>
+      <li>In Godot, set the renderer to <code>Compatibility</code>.</li>
+      <li>Project → Export → <strong>Web</strong> → export as <code>index.html</code> into this folder (overwrites this page).</li>
+      <li>Commit &amp; push — Vercel redeploys automatically.</li>
+    </ol>
+  </div>
+</body>
+</html>
